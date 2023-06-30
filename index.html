@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Field Observation Data Collection</title>
+</head>
+<body>
+
+<h2>Field Observation Data Collection</h2>
+
+<form id="observationForm">
+    <label for="studyName">Study Name:</label>
+    <input type="text" id="studyName" name="studyName"><br><br>
+    
+    <label for="observer">Observer:</label>
+    <input type="text" id="observer" name="observer"><br><br>
+    
+    <label for="location">Location:</label>
+    <input type="text" id="location" name="location"><br><br>
+    
+    <label for="observation">Observation:</label><br>
+    <textarea id="observation" name="observation" rows="4" cols="50"></textarea><br><br>
+    
+    <input type="button" value="Add Observation" onclick="addObservation()">
+</form>
+
+<h3>Recorded Observations:</h3>
+<pre id="recordedObservations"></pre>
+
+<button onclick="downloadCSV()">Download Data as CSV</button>
+
+<script>
+    let observations = [];
+
+    function addObservation() {
+        const studyName = document.getElementById("studyName").value;
+        const observer = document.getElementById("observer").value;
+        const location = document.getElementById("location").value;
+        const observation = document.getElementById("observation").value;
+        
+        // Format the timestamp to nearest second
+        const date = new Date();
+        const timestamp = date.toISOString().split('.')[0] + 'Z';
+
+        observations.push({studyName, timestamp, observer, location, observation});
+        
+        let displayText = observations.map(o => `${o.studyName}, ${o.timestamp}, ${o.observer}, ${o.location}, ${o.observation}`).join('\n');
+        document.getElementById("recordedObservations").innerText = displayText;
+    }
+
+    function downloadCSV() {
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Study Name,Timestamp,Observer,Location,Observation\n";
+        csvContent += observations.map(o => `"${o.studyName}","${o.timestamp}","${o.observer}","${o.location}","${o.observation}"`).join('\n');
+        
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "observations.csv");
+        document.body.appendChild(link);
+        link.click();
+    }
+</script>
+
+</body>
+</html>
